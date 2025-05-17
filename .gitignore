@@ -52,8 +52,8 @@ google-services.json
 ios/Runner/GoogleService-Info.plist
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
-*/**/firebase_options.dart
-*/**/firebase.json
+**/firebase_options.dart
+**/firebase.json
 
 # Freezed generated files
 *.g.dart
