@@ -1,3 +1,4 @@
+import 'package:chatting_demo_project/domain/model/user_model.dart';
 import 'package:chatting_demo_project/domain/repository/user_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,6 +34,14 @@ class UserRepositoryImpl implements UserRepository {
     final response = await _firebaseFirestore.collection('user').where('phone', isEqualTo: formatPhoneNumber(phoneNumber)).get();
     return response.docs.isEmpty;
   }
+
+  @override
+  Future<List<UserModel>> getUserList({required String phoneNumber}) async{
+    final response = await _firebaseFirestore.collection('user').where('phone', isNotEqualTo: formatPhoneNumber(phoneNumber)).get();
+    return response.docs.map((items) => UserModel(phoneNumber: items["phone"], uuid: items["uuid"])).toList();
+  }
+
+
 }
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
