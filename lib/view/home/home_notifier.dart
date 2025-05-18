@@ -10,11 +10,25 @@ class HomeNotifier extends Notifier<HomeState> {
   @override
   HomeState build() {
     _userRepository = ref.read(userRepositoryProvider);
+
+    final userState = ref.watch(phoneInputProvider);
+    if (userState.phoneNumber.isNotEmpty) {
+      fetchUserList(userState.phoneNumber);
+    }
+
     return HomeState();
   }
 
-  Future<void> fetchUserList() async {
-    final userState = ref.read(phoneInputProvider);
-    state = state.copyWith(userList: await _userRepository.getUserList(phoneNumber: userState.phoneNumber));
+  Future<void> fetchUserList(String phoneNumber) async {
+    try {
+      final userList = await _userRepository.getUserList(phoneNumber: phoneNumber);
+      state = state.copyWith(userList: userList);
+    } catch (e) {
+      print("Error fetching user list: $e");
+    }
   }
 }
+
+final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
+      () => HomeNotifier(),
+);
