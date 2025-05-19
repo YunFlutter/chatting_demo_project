@@ -30,18 +30,47 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<bool> getUser({required String phoneNumber}) async{
-    final response = await _firebaseFirestore.collection('user').where('phone', isEqualTo: formatPhoneNumber(phoneNumber)).get();
+  Future<bool> getUser({required String phoneNumber}) async {
+    final response =
+        await _firebaseFirestore
+            .collection('user')
+            .where('phone', isEqualTo: formatPhoneNumber(phoneNumber))
+            .get();
     return response.docs.isEmpty;
   }
 
-  @override
-  Future<List<UserModel>> getUserList({required String phoneNumber}) async{
-    final response = await _firebaseFirestore.collection('user').where('phone', isNotEqualTo: formatPhoneNumber(phoneNumber)).get();
-    return response.docs.map((items) => UserModel(phoneNumber: items["phone"], uuid: items["uuid"])).toList();
+  Future<UserModel> getUserModel({required String phoneNumber}) async {
+    final response =
+        await _firebaseFirestore
+            .collection('user')
+            .where('phone', isEqualTo: formatPhoneNumber(phoneNumber))
+            .get();
+    final List<UserModel> data =
+        response.docs.map((items) {
+          final itemData = items.data();
+          return UserModel(
+            uuid: itemData['uuid'],
+            phoneNumber: itemData['phone'],
+          );
+        }).toList();
+
+    return data[0];
   }
 
-
+  @override
+  Future<List<UserModel>> getUserList({required String phoneNumber}) async {
+    final response =
+        await _firebaseFirestore
+            .collection('user')
+            .where('phone', isNotEqualTo: formatPhoneNumber(phoneNumber))
+            .get();
+    return response.docs
+        .map(
+          (items) =>
+              UserModel(phoneNumber: items["phone"], uuid: items["uuid"]),
+        )
+        .toList();
+  }
 }
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {

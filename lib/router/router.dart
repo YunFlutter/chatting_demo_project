@@ -1,3 +1,6 @@
+import 'package:chatting_demo_project/domain/model/chat_send_model.dart';
+import 'package:chatting_demo_project/domain/model/user_model.dart';
+import 'package:chatting_demo_project/view/chatting/chat_screen.dart';
 import 'package:chatting_demo_project/view/home/home_screen.dart';
 import 'package:chatting_demo_project/view/phone_input/phone_input_notifier.dart';
 import 'package:chatting_demo_project/view/phone_input/phone_input_screen.dart';
@@ -13,6 +16,15 @@ final GoRouter router = GoRouter(
     GoRoute(path: '/', builder: (context, state) => PhoneInputScreen()),
     GoRoute(path: '/verify', builder: (context, state) => VerifyInputScreen()),
     GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
+    GoRoute(
+      path: '/chat',
+      builder:
+          (context, state) => ChatScreen(
+            currentUserId: (state.extra as ChatSendModel).currentUserId,
+            otherUserId: (state.extra as ChatSendModel).sendUserId,
+            senderName: (state.extra as ChatSendModel).sendName,
+          ),
+    ),
   ],
 
   redirect: (BuildContext context, GoRouterState state) async {

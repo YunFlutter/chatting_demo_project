@@ -14,6 +14,7 @@ class HomeNotifier extends Notifier<HomeState> {
     final userState = ref.watch(phoneInputProvider);
     if (userState.phoneNumber.isNotEmpty) {
       fetchUserList(userState.phoneNumber);
+      userInit(phoneNumber: userState.phoneNumber);
     }
 
     return HomeState();
@@ -21,14 +22,32 @@ class HomeNotifier extends Notifier<HomeState> {
 
   Future<void> fetchUserList(String phoneNumber) async {
     try {
-      final userList = await _userRepository.getUserList(phoneNumber: phoneNumber);
+      final userList = await _userRepository.getUserList(
+        phoneNumber: phoneNumber,
+      );
       state = state.copyWith(userList: userList);
     } catch (e) {
       print("Error fetching user list: $e");
     }
   }
+
+  Future<void> userInit({required String phoneNumber}) async {
+    final response = await _userRepository.getUserModel(
+      phoneNumber: phoneNumber,
+    );
+    state = state.copyWith(currentUser: response);
+  }
+
+  void chatInit({required String sendUserId}) {
+    state = state.copyWith(
+      sendModel: state.sendModel.copyWith(
+        currentUserId: state.currentUser.uuid,
+        sendUserId: sendUserId,
+      ),
+    );
+  }
 }
 
 final homeProvider = NotifierProvider<HomeNotifier, HomeState>(
-      () => HomeNotifier(),
+  () => HomeNotifier(),
 );
